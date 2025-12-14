@@ -655,7 +655,7 @@ describe('OpenAI Provider', () => {
   });
 
   describe('Modern Model Support', () => {
-    it('should use DALL-E 3 as default for generation', async () => {
+    it('should use gpt-image-1 as default for generation', async () => {
       provider = new OpenAIProvider();
       const mockResponse = {
         data: [{ b64_json: Buffer.from('image-data').toString('base64') }]
@@ -673,10 +673,10 @@ describe('OpenAI Provider', () => {
         prompt: 'test image'
       });
 
-      // Verify DALL-E 3 was used by default
+      // Verify gpt-image-1 was used by default (OpenAI's latest recommended model)
       const requestCall = (undici.request as any).mock.calls[0];
       const bodyData = JSON.parse(requestCall[1].body);
-      expect(bodyData.model).toBe('dall-e-3');
+      expect(bodyData.model).toBe('gpt-image-1');
     });
 
     it('should use gpt-image-1 as default for editing', async () => {
@@ -1031,13 +1031,7 @@ describe('Replicate Provider', () => {
     // Test configuration
     expect(provider.isConfigured()).toBe(true);
     expect(provider.getCapabilities().supportsGenerate).toBe(true);
-    expect(provider.getCapabilities().supportsEdit).toBe(false);
-
-    // Test error handling for edit (not supported)
-    await expect(provider.edit({
-      prompt: 'test',
-      baseImage: 'data:image/png;base64,test'
-    })).rejects.toThrow('does not support direct image editing');
+    expect(provider.getCapabilities().supportsEdit).toBe(true); // FLUX.2 models support editing
   });
 
   it('should handle API errors properly', async () => {
@@ -1076,16 +1070,11 @@ describe('Gemini Provider', () => {
 
   it('should handle generation with proper validation', async () => {
     provider = new GeminiProvider();
+    // Imagen API response structure
     const mockResponse = {
-      candidates: [{
-        content: {
-          parts: [{
-            inlineData: {
-              mimeType: 'image/png',
-              data: Buffer.from('image-data').toString('base64')
-            }
-          }]
-        }
+      predictions: [{
+        bytesBase64Encoded: Buffer.from('image-data').toString('base64'),
+        mimeType: 'image/png'
       }]
     };
 
@@ -1104,13 +1093,13 @@ describe('Gemini Provider', () => {
     });
 
     expect(result.provider).toBe('GEMINI');
-    expect(result.model).toBe('gemini-2.5-flash-image-preview');
+    expect(result.model).toBe('imagen-4.0-generate-001');
     expect(result.images).toHaveLength(1);
     expect(result.images[0].dataUrl).toContain('base64');
 
     const undiciModule = await import('undici');
     expect(undiciModule.request).toHaveBeenCalledWith(
-      expect.stringContaining('generativelanguage.googleapis.com'),
+      expect.stringContaining('googleapis.com'),
       expect.objectContaining({
         method: 'POST'
       })

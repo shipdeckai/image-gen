@@ -1,16 +1,16 @@
 {
-  "name": "@merlinrabens/image-gen-mcp-server",
-  "version": "1.6.1",
-  "description": "MCP server for image generation with multiple provider support",
-  "main": "dist/index.js",
+  "name": "image-gen",
+  "version": "2.0.0",
+  "description": "AI-powered image generation CLI with multi-provider support",
+  "main": "dist/cli.js",
   "bin": {
-    "image-gen-mcp-server": "dist/index.js"
+    "image-gen": "dist/cli.js"
   },
   "type": "module",
   "scripts": {
-    "dev": "tsx src/index.ts",
+    "dev": "tsx src/cli.ts",
     "build": "tsc -p .",
-    "start": "node dist/index.js",
+    "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
     "test:watch": "vitest watch",
@@ -19,17 +19,18 @@
     "lint": "tsc --noEmit"
   },
   "keywords": [
-    "mcp",
     "image-generation",
+    "ai",
     "openai",
     "stability",
-    "replicate",
-    "gemini"
+    "flux",
+    "dalle",
+    "claude-code",
+    "skill"
   ],
-  "author": "",
+  "author": "Merlin Rabens",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.4",
     "dotenv": "^16.6.1",
     "sharp": "^0.34.4",
     "undici": "^7.2.1",

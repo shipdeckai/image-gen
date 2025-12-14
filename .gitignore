@@ -57,3 +57,4 @@ venv/
 
 # Generated images directory
 .image-gen-mcp/
+.image-gen/

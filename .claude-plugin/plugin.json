@@ -1,0 +1,8 @@
+{
+  "name": "image-gen",
+  "description": "AI-powered image generation and editing across multiple providers (OpenAI, Stability, BFL, Ideogram, FAL, Gemini, Replicate)",
+  "version": "2.0.0",
+  "author": {
+    "name": "Merlin Rabens"
+  }
+}

@@ -1,7 +1,9 @@
-# Image Gen MCP Server - Technical Reference
+# Image Gen - Technical Reference
 
 ## Project Overview
-MCP (Model Context Protocol) server providing unified image generation across 9 AI providers with intelligent selection, fallback chains, and enterprise-grade security.
+Claude Code plugin and CLI tool providing unified image generation across 10 AI providers with intelligent selection, fallback chains, and enterprise-grade security.
+
+**Architecture**: CLI tool (`image-gen`) invoked by Claude Code via a Skill definition, replacing the previous MCP server approach for simpler, more direct integration.
 
 ## Provider Strengths & Positioning (December 2025)
 
@@ -106,28 +108,38 @@ MCP (Model Context Protocol) server providing unified image generation across 9 
 
 ### Directory Structure
 ```
-src/
-├── index.ts                 # MCP server entry, tool registration
-├── config.ts               # Provider management, lazy initialization
-├── types.ts                # TypeScript types & Zod schemas
-├── providers/
-│   ├── base.ts            # Abstract base class with security/performance
-│   ├── mock.ts            # Testing provider (dev/test only)
-│   ├── openai.ts          # DALL-E - versatile general-purpose
-│   ├── stability.ts       # Stable Diffusion - photorealism
-│   ├── leonardo.ts        # Artistic, cinematic, fantasy specialist
-│   ├── ideogram.ts        # Text rendering specialist
-│   ├── bfl.ts            # Black Forest Labs - ultra-high quality
-│   ├── fal.ts            # Ultra-fast generation
-│   ├── clipdrop.ts       # Post-processing only
-│   ├── replicate.ts      # Open model access
-│   └── gemini.ts         # Google multimodal
-├── services/
-│   └── providerSelector.ts # O(n) intelligent selection
-├── types/
-│   └── api-responses.ts   # Provider API response types
-└── util/
-    └── logger.ts          # Structured logging
+image-gen/
+├── .claude-plugin/
+│   └── plugin.json         # Plugin metadata
+├── skills/
+│   └── image-gen/
+│       ├── SKILL.md        # Skill definition (triggers Claude)
+│       └── references/
+│           └── providers.md # Provider capabilities reference
+├── src/
+│   ├── cli.ts              # CLI entry point
+│   ├── config.ts           # Provider management, lazy initialization
+│   ├── types.ts            # TypeScript types & Zod schemas
+│   ├── providers/
+│   │   ├── base.ts         # Abstract base class with security/performance
+│   │   ├── mock.ts         # Testing provider (dev/test only)
+│   │   ├── openai.ts       # DALL-E - versatile general-purpose
+│   │   ├── stability.ts    # Stable Diffusion - photorealism
+│   │   ├── leonardo.ts     # Artistic, cinematic, fantasy specialist
+│   │   ├── ideogram.ts     # Text rendering specialist
+│   │   ├── bfl.ts          # Black Forest Labs - ultra-high quality
+│   │   ├── fal.ts          # Ultra-fast generation
+│   │   ├── clipdrop.ts     # Post-processing only
+│   │   ├── replicate.ts    # Open model access
+│   │   ├── gemini.ts       # Google multimodal
+│   │   └── recraft.ts      # #1 globally, perfect text
+│   ├── services/
+│   │   └── providerSelector.ts # O(n) intelligent selection
+│   ├── types/
+│   │   └── api-responses.ts    # Provider API response types
+│   └── util/
+│       └── logger.ts       # Structured logging
+└── dist/                   # Compiled output
 ```
 
 ## Provider Implementation Guide

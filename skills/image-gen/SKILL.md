@@ -1,0 +1,70 @@
+---
+name: image-gen
+description: Generate and edit images using AI providers (OpenAI DALL-E, Stability AI, BFL FLUX, Ideogram, FAL, Gemini, Replicate, Clipdrop). Use when user asks to create images, generate artwork, make logos, create visual content, edit photos, remove backgrounds, or modify existing images. Triggers on requests involving pictures, illustrations, graphics, product shots, marketing visuals, or any image creation/editing task.
+---
+
+# Image Generation
+
+Generate images via CLI tool `image-gen` which handles provider selection, fallbacks, and image saving.
+
+## Generate an Image
+
+```bash
+image-gen generate --prompt "description of image" [--provider auto] [--width 1024] [--height 1024]
+```
+
+Output: JSON with file paths to saved images in `.image-gen/` directory.
+
+## Edit an Image
+
+```bash
+image-gen edit --image /path/to/image.png --prompt "edit instructions" [--provider auto]
+```
+
+## List Configured Providers
+
+```bash
+image-gen providers
+```
+
+## Provider Selection
+
+- `auto` (default): Intelligent selection based on prompt content
+- Explicit: `openai`, `stability`, `bfl`, `ideogram`, `fal`, `gemini`, `replicate`, `clipdrop`
+
+**Quick guide:**
+- Text/logos/typography → `ideogram` or `recraft`
+- Photorealism → `bfl` or `stability`
+- Fast iterations → `fal`
+- General purpose → `openai`
+- Image editing → `openai`, `stability`, `bfl`, `gemini`, `clipdrop`
+
+For detailed provider capabilities, see [references/providers.md](references/providers.md).
+
+## Environment Setup
+
+Requires API keys as environment variables. At minimum, set one of:
+- `OPENAI_API_KEY`
+- `STABILITY_API_KEY`
+- `BFL_API_KEY`
+- `IDEOGRAM_API_KEY`
+- `FAL_API_KEY`
+- `GEMINI_API_KEY`
+- `REPLICATE_API_TOKEN`
+
+## Example Workflows
+
+**Generate a logo:**
+```bash
+image-gen generate --prompt "Modern minimalist logo for TechStartup with the text 'NOVA'" --provider ideogram --width 1024 --height 1024
+```
+
+**Generate product shot:**
+```bash
+image-gen generate --prompt "Professional product photography of a sleek smartphone on marble surface, soft lighting" --provider bfl
+```
+
+**Edit an image:**
+```bash
+image-gen edit --image ./photo.png --prompt "Remove the background and make it transparent" --provider clipdrop
+```
