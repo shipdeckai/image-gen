@@ -4,5 +4,8 @@
   "version": "2.0.0",
   "author": {
     "name": "Merlin Rabens"
+  },
+  "components": {
+    "skills": ["skills/image-gen"]
   }
 }
