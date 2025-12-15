@@ -1,0 +1,222 @@
+import { MockProvider } from './providers/mock.js';
+import { OpenAIProvider } from './providers/openai.js';
+import { StabilityProvider } from './providers/stability.js';
+import { ReplicateProvider } from './providers/replicate.js';
+import { GeminiProvider } from './providers/gemini.js';
+import { IdeogramProvider } from './providers/ideogram.js';
+import { BFLProvider } from './providers/bfl.js';
+import { LeonardoProvider } from './providers/leonardo.js';
+import { FalProvider } from './providers/fal.js';
+import { ClipdropProvider } from './providers/clipdrop.js';
+import { RecraftProvider } from './providers/recraft.js';
+import { ProviderError } from './types.js';
+import { selectProvider } from './services/providerSelector.js';
+/**
+ * Provider factory and configuration management
+ */
+export class Config {
+    static providers = new Map();
+    /**
+     * Lazy create a provider only when needed
+     */
+    static createProvider(name) {
+        const existing = this.providers.get(name);
+        if (existing)
+            return existing;
+        let provider;
+        switch (name) {
+            case 'MOCK':
+                provider = new MockProvider();
+                break;
+            case 'OPENAI':
+                provider = new OpenAIProvider();
+                break;
+            case 'STABILITY':
+                provider = new StabilityProvider();
+                break;
+            case 'REPLICATE':
+                provider = new ReplicateProvider();
+                break;
+            case 'GEMINI':
+                provider = new GeminiProvider();
+                break;
+            case 'IDEOGRAM':
+                provider = new IdeogramProvider();
+                break;
+            case 'BFL':
+                provider = new BFLProvider();
+                break;
+            case 'LEONARDO':
+                provider = new LeonardoProvider();
+                break;
+            case 'FAL':
+                provider = new FalProvider();
+                break;
+            case 'CLIPDROP':
+                provider = new ClipdropProvider();
+                break;
+            case 'RECRAFT':
+                provider = new RecraftProvider();
+                break;
+        }
+        if (provider) {
+            this.providers.set(name, provider);
+        }
+        return provider;
+    }
+    /**
+     * Get a provider by name
+     */
+    static getProvider(name) {
+        return this.createProvider(name.toUpperCase());
+    }
+    /**
+     * Get all registered providers
+     */
+    static getAllProviders() {
+        // Create all providers lazily
+        const allNames = ['MOCK', 'OPENAI', 'STABILITY', 'REPLICATE', 'GEMINI', 'IDEOGRAM', 'BFL', 'LEONARDO', 'FAL', 'CLIPDROP', 'RECRAFT'];
+        for (const name of allNames) {
+            this.createProvider(name);
+        }
+        return this.providers;
+    }
+    /**
+     * Get list of configured providers
+     */
+    static getConfiguredProviders() {
+        const configured = [];
+        const allNames = ['MOCK', 'OPENAI', 'STABILITY', 'REPLICATE', 'GEMINI', 'IDEOGRAM', 'BFL', 'LEONARDO', 'FAL', 'CLIPDROP', 'RECRAFT'];
+        for (const name of allNames) {
+            const provider = this.createProvider(name);
+            if (provider?.isConfigured()) {
+                configured.push(name);
+            }
+        }
+        return configured;
+    }
+    /**
+     * Get list of configured providers that support editing
+     */
+    static getConfiguredEditProviders() {
+        const configured = [];
+        const allNames = ['MOCK', 'OPENAI', 'STABILITY', 'REPLICATE', 'GEMINI', 'IDEOGRAM', 'BFL', 'LEONARDO', 'FAL', 'CLIPDROP', 'RECRAFT'];
+        for (const name of allNames) {
+            const provider = this.createProvider(name);
+            if (provider?.isConfigured() && provider.getCapabilities().supportsEdit) {
+                configured.push(name);
+            }
+        }
+        return configured;
+    }
+    /**
+     * Get default provider based on env or fallback chain
+     */
+    static getDefaultProvider() {
+        // Check env variable first
+        const envDefault = process.env.DEFAULT_PROVIDER;
+        if (envDefault) {
+            const provider = this.getProvider(envDefault);
+            if (provider?.isConfigured()) {
+                return provider;
+            }
+            if (process.env.DISABLE_FALLBACK === 'true') {
+                throw new ProviderError(`Default provider ${envDefault} not configured and fallback is disabled`, envDefault, false);
+            }
+        }
+        // If fallback is disabled, throw error
+        if (process.env.DISABLE_FALLBACK === 'true') {
+            throw new ProviderError('No default provider configured and fallback is disabled', 'NONE', false);
+        }
+        // Fallback chain - prioritize versatility, reliability, and quality
+        // RECRAFT: #1 globally, perfect text rendering, vector generation
+        // BFL: High-quality photorealism
+        // OPENAI: Best prompt understanding, most versatile
+        // LEONARDO: Excellent artistic quality, cinematic, fantasy
+        // IDEOGRAM: Specialized text rendering
+        // STABILITY: Mature, reliable, broad use cases
+        // GEMINI: Google infrastructure, unique multimodal capabilities
+        // FAL: Ultra-fast generation
+        // REPLICATE: Variable quality open models
+        const fallbackChain = ['RECRAFT', 'BFL', 'OPENAI', 'LEONARDO', 'IDEOGRAM', 'STABILITY', 'GEMINI', 'FAL', 'REPLICATE'];
+        for (const name of fallbackChain) {
+            const provider = this.createProvider(name);
+            if (provider?.isConfigured()) {
+                return provider;
+            }
+        }
+        // No real providers configured - check if we should allow MOCK
+        const allowMock = process.env.ALLOW_MOCK_PROVIDER === 'true' || process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test';
+        if (!allowMock) {
+            throw new ProviderError('No image generation providers configured. Please set up at least one provider API key (OPENAI_API_KEY, STABILITY_API_KEY, etc.). See documentation for setup instructions.', 'NONE', false);
+        }
+        // MOCK is only available in development/test or when explicitly allowed
+        return this.createProvider('MOCK');
+    }
+    /**
+     * Get provider with fallback support
+     */
+    static getProviderWithFallback(requestedName, prompt) {
+        // Check if we should use auto-selection (explicit 'auto' or DEFAULT_PROVIDER=auto)
+        const shouldUseAutoSelection = requestedName === 'auto' ||
+            (!requestedName && process.env.DEFAULT_PROVIDER === 'auto');
+        // Handle 'auto' provider selection
+        if (shouldUseAutoSelection && prompt) {
+            // Exclude MOCK from auto-selection - it's only for explicit use or last resort
+            const configured = this.getConfiguredProviders().filter(name => name !== 'MOCK');
+            const selectedName = selectProvider(prompt, configured);
+            const provider = selectedName ? this.getProvider(selectedName) : null;
+            if (provider?.isConfigured()) {
+                return provider;
+            }
+        }
+        if (requestedName && requestedName !== 'auto') {
+            const provider = this.getProvider(requestedName);
+            if (provider) {
+                if (provider.isConfigured()) {
+                    return provider;
+                }
+                if (process.env.DISABLE_FALLBACK === 'true') {
+                    throw new ProviderError(`Provider ${requestedName} not configured and fallback is disabled`, requestedName, false);
+                }
+                // Don't log to avoid stdout/stderr pollution
+            }
+            else {
+                if (process.env.DISABLE_FALLBACK === 'true') {
+                    throw new ProviderError(`Unknown provider ${requestedName} and fallback is disabled`, requestedName, false);
+                }
+                // Don't log to avoid stdout/stderr pollution
+            }
+        }
+        return this.getDefaultProvider();
+    }
+    /**
+     * Check if required environment variables are set
+     */
+    static requireEnv(keys) {
+        const missing = keys.filter(key => !process.env[key]);
+        if (missing.length > 0) {
+            throw new ProviderError(`Missing required environment variables: ${missing.join(', ')}`, 'CONFIG', false);
+        }
+    }
+    /**
+     * Get provider status for config.providers tool
+     */
+    static getProviderStatus() {
+        const status = [];
+        const allNames = ['MOCK', 'OPENAI', 'STABILITY', 'REPLICATE', 'GEMINI', 'IDEOGRAM', 'BFL', 'LEONARDO', 'FAL', 'CLIPDROP', 'RECRAFT'];
+        for (const name of allNames) {
+            const provider = this.createProvider(name);
+            if (provider) {
+                status.push({
+                    name,
+                    configured: provider.isConfigured(),
+                    requiredEnvVars: provider.getRequiredEnvVars(),
+                    capabilities: provider.getCapabilities()
+                });
+            }
+        }
+        return status;
+    }
+}
+//# sourceMappingURL=config.js.map

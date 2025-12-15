@@ -7,10 +7,15 @@ description: Generate and edit images using AI providers (OpenAI DALL-E, Stabili
 
 Generate images via CLI tool `image-gen` which handles provider selection, fallbacks, and image saving.
 
+**Important:** Run commands using `node` with the plugin's CLI path:
+```bash
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js <command>
+```
+
 ## Generate an Image
 
 ```bash
-image-gen generate --prompt "description of image" [--provider auto] [--width 1024] [--height 1024]
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js generate --prompt "description of image" [--provider auto] [--width 1024] [--height 1024]
 ```
 
 Output: JSON with file paths to saved images in `.image-gen/` directory.
@@ -18,13 +23,13 @@ Output: JSON with file paths to saved images in `.image-gen/` directory.
 ## Edit an Image
 
 ```bash
-image-gen edit --image /path/to/image.png --prompt "edit instructions" [--provider auto]
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js edit --image /path/to/image.png --prompt "edit instructions" [--provider auto]
 ```
 
 ## List Configured Providers
 
 ```bash
-image-gen providers
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js providers
 ```
 
 ## Provider Selection
@@ -56,15 +61,15 @@ Requires API keys as environment variables. At minimum, set one of:
 
 **Generate a logo:**
 ```bash
-image-gen generate --prompt "Modern minimalist logo for TechStartup with the text 'NOVA'" --provider ideogram --width 1024 --height 1024
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js generate --prompt "Modern minimalist logo for TechStartup with the text 'NOVA'" --provider ideogram --width 1024 --height 1024
 ```
 
 **Generate product shot:**
 ```bash
-image-gen generate --prompt "Professional product photography of a sleek smartphone on marble surface, soft lighting" --provider bfl
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js generate --prompt "Professional product photography of a sleek smartphone on marble surface, soft lighting" --provider bfl
 ```
 
 **Edit an image:**
 ```bash
-image-gen edit --image ./photo.png --prompt "Remove the background and make it transparent" --provider clipdrop
+node ${CLAUDE_PLUGIN_ROOT}/dist/cli.js edit --image ./photo.png --prompt "Remove the background and make it transparent" --provider clipdrop
 ```

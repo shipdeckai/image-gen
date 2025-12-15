@@ -1,8 +1,7 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build output (dist/ intentionally NOT ignored - ships with plugin for zero-build install)
 
 # Environment files
 .env
