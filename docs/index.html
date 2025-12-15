@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Gen - AI-Powered Image Generation</title>
+  <meta name="description" content="Multi-provider AI image generation CLI and Claude Code plugin. Generate stunning images with 10 providers including OpenAI, Stability, BFL FLUX, and more.">
+  <link rel="icon" href="https://raw.githubusercontent.com/shipdeckai/image-gen/main/logo.png" type="image/png">
+  <style>
+    :root {
+      --gold: #d4a853;
+      --gold-light: #e8c476;
+      --navy: #1a1f36;
+      --navy-light: #252b47;
+      --white: #ffffff;
+      --gray-100: #f7f8fa;
+      --gray-200: #e8eaef;
+      --gray-600: #6b7280;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: var(--navy);
+      color: var(--white);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 20px 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: rgba(26, 31, 54, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 100;
+      border-bottom: 1px solid rgba(212, 168, 83, 0.1);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--white);
+      text-decoration: none;
+    }
+
+    .logo img {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--gray-200);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover {
+      color: var(--gold);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      color: var(--navy);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(212, 168, 83, 0.3);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* Hero */
+    .hero {
+      padding: 160px 0 100px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(212, 168, 83, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      font-size: 4rem;
+      font-weight: 800;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, var(--white) 30%, var(--gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      font-size: 1.35rem;
+      color: var(--gray-200);
+      max-width: 600px;
+      margin: 0 auto 40px;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 60px;
+    }
+
+    /* Showcase */
+    .showcase {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .showcase-main {
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+    }
+
+    .showcase-main img {
+      width: 100%;
+      display: block;
+    }
+
+    .showcase-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .showcase-item {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: transform 0.3s;
+    }
+
+    .showcase-item:hover {
+      transform: scale(1.05);
+    }
+
+    .showcase-item img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      display: block;
+    }
+
+    /* Providers */
+    .providers {
+      padding: 120px 0;
+      background: var(--navy-light);
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+
+    .section-subtitle {
+      text-align: center;
+      color: var(--gray-200);
+      font-size: 1.1rem;
+      margin-bottom: 60px;
+    }
+
+    .provider-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+    }
+
+    .provider-card {
+      background: var(--navy);
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s;
+    }
+
+    .provider-card:hover {
+      border-color: var(--gold);
+      transform: translateY(-4px);
+    }
+
+    .provider-name {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: var(--gold);
+    }
+
+    .provider-strength {
+      color: var(--gray-200);
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+    }
+
+    .provider-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: rgba(212, 168, 83, 0.1);
+      color: var(--gold-light);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+
+    /* Features */
+    .features {
+      padding: 120px 0;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 40px;
+    }
+
+    .feature-icon {
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, var(--gold), var(--gold-light));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 20px;
+    }
+
+    .feature h3 {
+      font-size: 1.35rem;
+      margin-bottom: 12px;
+    }
+
+    .feature p {
+      color: var(--gray-200);
+    }
+
+    /* Install */
+    .install {
+      padding: 120px 0;
+      background: var(--navy-light);
+    }
+
+    .code-block {
+      background: #0d1117;
+      border-radius: 12px;
+      padding: 24px 32px;
+      font-family: 'SF Mono', Monaco, monospace;
+      font-size: 1rem;
+      max-width: 700px;
+      margin: 0 auto;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .code-block code {
+      color: var(--gray-200);
+    }
+
+    .code-block .comment {
+      color: #6a737d;
+    }
+
+    .code-block .command {
+      color: #79c0ff;
+    }
+
+    .code-block .string {
+      color: #a5d6ff;
+    }
+
+    /* Footer */
+    footer {
+      padding: 60px 0;
+      text-align: center;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    footer p {
+      color: var(--gray-600);
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .hero p {
+        font-size: 1.1rem;
+      }
+
+      .hero-buttons {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .showcase-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .showcase-item img {
+        height: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container">
+      <nav>
+        <a href="#" class="logo">
+          <img src="https://raw.githubusercontent.com/shipdeckai/image-gen/main/logo.png" alt="Image Gen">
+          Image Gen
+        </a>
+        <ul class="nav-links">
+          <li><a href="#providers">Providers</a></li>
+          <li><a href="#features">Features</a></li>
+          <li><a href="#install">Install</a></li>
+        </ul>
+        <a href="https://github.com/shipdeckai/image-gen" class="btn btn-secondary">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>AI Image Generation,<br>Unified</h1>
+        <p>Generate stunning images with 10 AI providers through a single CLI. Intelligent selection, automatic fallbacks, enterprise-grade reliability.</p>
+        <div class="hero-buttons">
+          <a href="#install" class="btn btn-primary">Get Started</a>
+          <a href="https://github.com/shipdeckai/image-gen" class="btn btn-secondary">View on GitHub</a>
+        </div>
+        <div class="showcase">
+          <div class="showcase-main">
+            <img src="https://github.com/shipdeckai/image-gen/releases/download/showcase-v1/hero-image.webp" alt="AI Generated Image">
+          </div>
+          <div class="showcase-grid">
+            <div class="showcase-item">
+              <img src="https://github.com/shipdeckai/image-gen/releases/download/showcase-v1/artistic-render.webp" alt="Artistic Render">
+            </div>
+            <div class="showcase-item">
+              <img src="https://github.com/shipdeckai/image-gen/releases/download/showcase-v1/icon-logo.webp" alt="Icon Logo">
+            </div>
+            <div class="showcase-item">
+              <img src="https://github.com/shipdeckai/image-gen/releases/download/showcase-v1/product-mockup.webp" alt="Product Mockup">
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="providers" id="providers">
+      <div class="container">
+        <h2 class="section-title">10 World-Class Providers</h2>
+        <p class="section-subtitle">From photorealism to artistic renders, each provider excels at different tasks.</p>
+        <div class="provider-grid">
+          <div class="provider-card">
+            <div class="provider-name">OpenAI</div>
+            <div class="provider-strength">Versatile general-purpose generation with exceptional text rendering</div>
+            <div class="provider-tags">
+              <span class="tag">DALL-E 3</span>
+              <span class="tag">GPT Image</span>
+              <span class="tag">Text</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">BFL FLUX</div>
+            <div class="provider-strength">State-of-the-art photorealism and ultra-high resolution</div>
+            <div class="provider-tags">
+              <span class="tag">FLUX.2</span>
+              <span class="tag">4K</span>
+              <span class="tag">Pro</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Stability AI</div>
+            <div class="provider-strength">Fine parameter control with mature, reliable API</div>
+            <div class="provider-tags">
+              <span class="tag">SDXL</span>
+              <span class="tag">img2img</span>
+              <span class="tag">Control</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Ideogram</div>
+            <div class="provider-strength">Industry-leading text-in-image and typography</div>
+            <div class="provider-tags">
+              <span class="tag">Text</span>
+              <span class="tag">Logos</span>
+              <span class="tag">V3</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Google Gemini</div>
+            <div class="provider-strength">Imagen 4 models with multimodal understanding</div>
+            <div class="provider-tags">
+              <span class="tag">Imagen 4</span>
+              <span class="tag">Multi-image</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">FAL</div>
+            <div class="provider-strength">Ultra-fast generation with FLUX.2 models</div>
+            <div class="provider-tags">
+              <span class="tag">Fast</span>
+              <span class="tag">FLUX.2</span>
+              <span class="tag">Pro</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Leonardo</div>
+            <div class="provider-strength">Artistic renders, fantasy art, and game assets</div>
+            <div class="provider-tags">
+              <span class="tag">Artistic</span>
+              <span class="tag">Fantasy</span>
+              <span class="tag">Cinematic</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Recraft</div>
+            <div class="provider-strength">#1 globally ranked for perfect text rendering</div>
+            <div class="provider-tags">
+              <span class="tag">#1 ELO</span>
+              <span class="tag">Vector</span>
+              <span class="tag">Text</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">Replicate</div>
+            <div class="provider-strength">Access to FLUX.2 and community open models</div>
+            <div class="provider-tags">
+              <span class="tag">FLUX.2</span>
+              <span class="tag">Open Source</span>
+            </div>
+          </div>
+          <div class="provider-card">
+            <div class="provider-name">ClipDrop</div>
+            <div class="provider-strength">Specialized post-processing and enhancement</div>
+            <div class="provider-tags">
+              <span class="tag">Upscale</span>
+              <span class="tag">Remove BG</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features" id="features">
+      <div class="container">
+        <h2 class="section-title">Built for Production</h2>
+        <p class="section-subtitle">Enterprise-grade reliability with developer-friendly ergonomics.</p>
+        <div class="feature-grid">
+          <div class="feature">
+            <div class="feature-icon">&#x26A1;</div>
+            <h3>Intelligent Selection</h3>
+            <p>Automatically routes to the best provider for your prompt. Text-heavy? Ideogram. Photorealistic? BFL. The right tool for every job.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#x1F504;</div>
+            <h3>Automatic Fallbacks</h3>
+            <p>If one provider fails, the system automatically tries the next best option. Your workflow never breaks.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#x1F512;</div>
+            <h3>Security First</h3>
+            <p>Input validation, rate limiting, resource cleanup. Built with OWASP best practices from day one.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#x1F3AF;</div>
+            <h3>Claude Code Native</h3>
+            <p>Designed as a Claude Code plugin. Ask Claude to generate images and it just works - no MCP server setup required.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#x1F4CA;</div>
+            <h3>Full Type Safety</h3>
+            <p>TypeScript with Zod runtime validation. Catch errors at compile time, not production.</p>
+          </div>
+          <div class="feature">
+            <div class="feature-icon">&#x23F1;</div>
+            <h3>Performance Optimized</h3>
+            <p>Caching, connection pooling, O(n) provider selection. Fast when it needs to be fast.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="install" id="install">
+      <div class="container">
+        <h2 class="section-title">Get Started in Seconds</h2>
+        <p class="section-subtitle">Install as a Claude Code plugin or use standalone.</p>
+        <div class="code-block">
+          <code>
+            <span class="comment"># Install as Claude Code plugin</span><br>
+            <span class="command">claude plugin add</span> <span class="string">shipdeckai/image-gen</span><br><br>
+            <span class="comment"># Or clone and use directly</span><br>
+            <span class="command">git clone</span> <span class="string">https://github.com/shipdeckai/image-gen</span><br>
+            <span class="command">cd</span> image-gen && <span class="command">npm install</span><br><br>
+            <span class="comment"># Generate an image</span><br>
+            <span class="command">node dist/cli.js generate</span> <span class="string">"A golden sunset over mountains"</span>
+          </code>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>Built by <a href="https://github.com/shipdeckai">ShipdeckAI</a></p>
+    </div>
+  </footer>
+</body>
+</html>
