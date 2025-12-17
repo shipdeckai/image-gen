@@ -25,14 +25,14 @@ This repository now hosts only the [landing page](https://shipdeckai.github.io/i
 
 ### For Claude Code Users
 
-1. Add the marketplace:
-   ```bash
-   claude /plugin add marketplace shipdeckai/claude-skills
+1. Add the marketplace (run inside Claude Code):
+   ```
+   /plugin marketplace add shipdeckai/claude-skills
    ```
 
-2. Enable the image-gen skill:
-   ```bash
-   claude /plugin enable image-gen@claude-skills
+2. Install the image-gen plugin:
+   ```
+   /plugin install image-gen@shipdeckai/claude-skills
    ```
 
 3. Configure at least one API key in your shell profile:
