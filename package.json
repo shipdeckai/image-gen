@@ -9,7 +9,8 @@
   "type": "module",
   "scripts": {
     "dev": "tsx src/cli.ts",
-    "build": "tsc -p .",
+    "build": "tsc -p . && npm run bundle",
+    "bundle": "esbuild src/cli.ts --bundle --platform=node --target=node18 --outfile=dist/cli.bundle.cjs --external:sharp --format=cjs",
     "start": "node dist/cli.js",
     "typecheck": "tsc --noEmit",
     "test": "vitest",
@@ -41,6 +42,7 @@
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@vitest/coverage-v8": "^2.1.8",
+    "esbuild": "^0.27.2",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"
