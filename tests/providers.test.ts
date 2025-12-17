@@ -673,13 +673,13 @@ describe('OpenAI Provider', () => {
         prompt: 'test image'
       });
 
-      // Verify gpt-image-1 was used by default (OpenAI's latest recommended model)
+      // Verify gpt-image-1.5 was used by default (OpenAI's latest Dec 2025 model)
       const requestCall = (undici.request as any).mock.calls[0];
       const bodyData = JSON.parse(requestCall[1].body);
-      expect(bodyData.model).toBe('gpt-image-1');
+      expect(bodyData.model).toBe('gpt-image-1.5');
     });
 
-    it('should use gpt-image-1 as default for editing', async () => {
+    it('should use gpt-image-1.5 as default for editing', async () => {
       provider = new OpenAIProvider();
       const mockResponse = {
         data: [{ url: 'https://example.com/edited-image.png' }]
@@ -703,16 +703,16 @@ describe('OpenAI Provider', () => {
         baseImage: 'data:image/png;base64,dGVzdA=='
       });
 
-      // Verify gpt-image-1 was used
+      // Verify gpt-image-1.5 was used
       const requestCall = (undici.request as any).mock.calls[0];
       const requestBody = requestCall[1].body.toString();
-      expect(requestBody).toContain('gpt-image-1');
+      expect(requestBody).toContain('gpt-image-1.5');
     });
 
-    it('should only support DALL-E 3 and gpt-image-1', () => {
+    it('should support gpt-image-1.5, gpt-image-1, and DALL-E models', () => {
       const capabilities = provider.getCapabilities();
-      expect(capabilities.supportedModels).toEqual(['dall-e-3', 'gpt-image-1']);
-      expect(capabilities.supportedModels).not.toContain('dall-e-2');
+      expect(capabilities.supportedModels).toEqual(['gpt-image-1.5', 'gpt-image-1', 'dall-e-3', 'dall-e-2']);
+      expect(capabilities.supportedModels).toContain('gpt-image-1.5');
     });
   });
 
@@ -856,7 +856,7 @@ describe('OpenAI Provider', () => {
     });
   });
 
-  describe('DALL-E 3 Size Mapping', () => {
+  describe('gpt-image-1.5 Size Mapping', () => {
     beforeEach(() => {
       provider = new OpenAIProvider();
     });
@@ -885,7 +885,7 @@ describe('OpenAI Provider', () => {
       expect(bodyData.size).toBe('1024x1024');
     });
 
-    it('should map landscape to 1792x1024', async () => {
+    it('should map landscape to 1536x1024 for gpt-image-1.5', async () => {
       const mockResponse = {
         data: [{ b64_json: Buffer.from('image-data').toString('base64') }]
       };
@@ -906,10 +906,10 @@ describe('OpenAI Provider', () => {
 
       const requestCall = (undici.request as any).mock.calls[0];
       const bodyData = JSON.parse(requestCall[1].body);
-      expect(bodyData.size).toBe('1792x1024');
+      expect(bodyData.size).toBe('1536x1024');
     });
 
-    it('should map portrait to 1024x1792', async () => {
+    it('should map portrait to 1024x1536 for gpt-image-1.5', async () => {
       const mockResponse = {
         data: [{ b64_json: Buffer.from('image-data').toString('base64') }]
       };
@@ -930,7 +930,7 @@ describe('OpenAI Provider', () => {
 
       const requestCall = (undici.request as any).mock.calls[0];
       const bodyData = JSON.parse(requestCall[1].body);
-      expect(bodyData.size).toBe('1024x1792');
+      expect(bodyData.size).toBe('1024x1536');
     });
   });
 });
