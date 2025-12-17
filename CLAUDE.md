@@ -7,14 +7,14 @@ Claude Code plugin and CLI tool providing unified image generation across 10 AI 
 
 ## Provider Strengths & Positioning (December 2025)
 
-### OPENAI (gpt-image-1)
+### OPENAI (gpt-image-1.5)
 - **Best for**: Versatile general-purpose generation, creative interpretation, text rendering
-- **Strengths**: Superior instruction following, exceptional text rendering, detailed editing, world knowledge
+- **Strengths**: Superior instruction following, exceptional text rendering (especially small/dense text), detailed editing with visual consistency, world knowledge
 - **Quality**: Highest quality, consistent across use cases
-- **Speed**: Moderate (10-30s)
-- **Default Model**: `gpt-image-1` (OpenAI's latest, recommended)
-- **Available Models**: gpt-image-1, dall-e-3, dall-e-2
-- **Dimensions**: 1024x1024, 1536x1024, 1024x1536; quality: low/medium/high/auto
+- **Speed**: Fast (2-8s) - 4x faster than gpt-image-1
+- **Default Model**: `gpt-image-1.5` (OpenAI's latest, Dec 2025 - 4x faster, better text, 20% cheaper)
+- **Available Models**: gpt-image-1.5, gpt-image-1, dall-e-3, dall-e-2
+- **Dimensions**: 1024x1024, 1536x1024, 1024x1536 (gpt-image-1.5/1); 1792x1024, 1024x1792 (DALL-E 3)
 - **Capabilities**: Generate, Edit, Variations (DALL-E 2), Streaming, Transparency
 - **Position**: Primary fallback - most versatile and reliable
 

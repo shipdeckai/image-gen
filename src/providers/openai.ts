@@ -29,9 +29,9 @@ export class OpenAIProvider extends ImageProvider {
     return {
       supportsGenerate: true,
       supportsEdit: true,
-      maxWidth: 1792,
-      maxHeight: 1792,
-      supportedModels: ['dall-e-3', 'gpt-image-1']
+      maxWidth: 1536,  // gpt-image-1.5/1: 1536x1024, DALL-E 3: 1792x1024
+      maxHeight: 1536, // gpt-image-1.5/1: 1024x1536, DALL-E 3: 1024x1792
+      supportedModels: ['gpt-image-1.5', 'gpt-image-1', 'dall-e-3', 'dall-e-2']
     };
   }
 
@@ -41,8 +41,8 @@ export class OpenAIProvider extends ImageProvider {
       throw new ProviderError('OpenAI API key not configured', this.name);
     }
 
-    const model = input.model || 'gpt-image-1'; // gpt-image-1 is OpenAI's latest recommended model
-    const size = this.mapSize(input.width, input.height);
+    const model = input.model || 'gpt-image-1.5'; // gpt-image-1.5 is OpenAI's latest (Dec 2025) - 4x faster, better text
+    const size = this.mapSize(input.width, input.height, model);
 
     logger.info(`OpenAI generating image`, { model, size, prompt: input.prompt.slice(0, 50) });
 
@@ -57,7 +57,7 @@ export class OpenAIProvider extends ImageProvider {
         n: 1
       };
 
-      // gpt-image-1 doesn't support response_format parameter
+      // gpt-image-1 and gpt-image-1.5 don't support response_format parameter
       // Only dall-e-3 and dall-e-2 support it
       if (model === 'dall-e-3' || model === 'dall-e-2') {
         requestBody.response_format = 'b64_json';
@@ -90,7 +90,7 @@ export class OpenAIProvider extends ImageProvider {
             format: 'png' as const
           };
         } else if (img.url) {
-          // gpt-image-1 returns URL - download and convert to data URL
+          // gpt-image-1 and gpt-image-1.5 return URL - download and convert to data URL
           const imageResponse = await fetch(img.url);
           const arrayBuffer = await imageResponse.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
@@ -148,8 +148,8 @@ export class OpenAIProvider extends ImageProvider {
 
       const maskBuffer = input.maskImage ? (await this.getImageBuffer(input.maskImage)).buffer : undefined;
 
-      // Select model - gpt-image-1 is newer and better, dall-e-2 for fallback
-      const model = input.model || 'gpt-image-1';
+      // Select model - gpt-image-1.5 is newest (Dec 2025), better editing consistency
+      const model = input.model || 'gpt-image-1.5';
 
       // Create multipart form data manually
       const boundary = `----FormBoundary${Date.now()}`;
@@ -188,7 +188,7 @@ export class OpenAIProvider extends ImageProvider {
         `${input.prompt}\r\n`
       ));
 
-      // response_format only supported for dall-e-2, gpt-image-1 uses output_format
+      // response_format only supported for dall-e-2, gpt-image-1 and gpt-image-1.5 use output_format
       if (model === 'dall-e-2') {
         parts.push(Buffer.from(
           `--${boundary}\r\n` +
@@ -196,7 +196,7 @@ export class OpenAIProvider extends ImageProvider {
           `b64_json\r\n`
         ));
       } else {
-        // gpt-image-1 uses output_format and returns URL by default
+        // gpt-image-1/1.5 use output_format and return URL by default
         parts.push(Buffer.from(
           `--${boundary}\r\n` +
           `Content-Disposition: form-data; name="output_format"\r\n\r\n` +
@@ -241,7 +241,7 @@ export class OpenAIProvider extends ImageProvider {
             format: 'png' as const
           };
         } else if (img.url) {
-          // gpt-image-1 returns URL - download and convert to data URL
+          // gpt-image-1/1.5 return URL - download and convert to data URL
           const imageResponse = await fetch(img.url);
           const arrayBuffer = await imageResponse.arrayBuffer();
           const buffer = Buffer.from(arrayBuffer);
@@ -269,21 +269,37 @@ export class OpenAIProvider extends ImageProvider {
 
   /**
    * Map width/height to OpenAI size strings
+   * gpt-image-1.5/1 supports: 1024x1024, 1536x1024, 1024x1536
    * DALL-E 3 supports: 1024x1024, 1792x1024, 1024x1792
    */
-  private mapSize(width?: number, height?: number): string {
-    // DALL-E 3 exact sizes
+  private mapSize(width?: number, height?: number, model?: string): string {
+    const isLegacyDalle = model === 'dall-e-3' || model === 'dall-e-2';
+
+    // Exact size matches
     if (width && height) {
       if (width === 1024 && height === 1024) return '1024x1024';
-      if (width === 1792 && height === 1024) return '1792x1024';
-      if (width === 1024 && height === 1792) return '1024x1792';
+
+      if (isLegacyDalle) {
+        // DALL-E 3 sizes
+        if (width === 1792 && height === 1024) return '1792x1024';
+        if (width === 1024 && height === 1792) return '1024x1792';
+      } else {
+        // gpt-image-1.5/1 sizes
+        if (width === 1536 && height === 1024) return '1536x1024';
+        if (width === 1024 && height === 1536) return '1024x1536';
+      }
     }
 
     // Default based on aspect ratio
     if (width && height) {
       const ratio = width / height;
-      if (ratio > 1.5) return '1792x1024'; // Landscape
-      if (ratio < 0.7) return '1024x1792'; // Portrait
+      if (isLegacyDalle) {
+        if (ratio > 1.5) return '1792x1024'; // Landscape
+        if (ratio < 0.7) return '1024x1792'; // Portrait
+      } else {
+        if (ratio > 1.2) return '1536x1024'; // Landscape
+        if (ratio < 0.8) return '1024x1536'; // Portrait
+      }
     }
 
     return '1024x1024'; // Square default

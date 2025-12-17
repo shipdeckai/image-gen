@@ -6,7 +6,7 @@ Detailed capabilities for each image generation provider.
 
 | Provider | Best For | Generate | Edit | Max Size | Speed |
 |----------|----------|----------|------|----------|-------|
-| OpenAI | Versatile, creative | Yes | Yes | 1024x1024 | Moderate |
+| OpenAI | Versatile, creative | Yes | Yes | 1792x1792 | Fast |
 | Stability | Photorealism | Yes | Yes | 2048x2048 | Fast |
 | BFL | Ultra-high quality | Yes | Yes | 2048x2048 | Moderate |
 | Ideogram | Text rendering, logos | Yes | Yes | 2048x2048 | Fast |
@@ -17,13 +17,13 @@ Detailed capabilities for each image generation provider.
 | Leonardo | Artistic, cinematic | Yes | No | 1024x1024 | Moderate |
 | Recraft | Perfect text, vectors | Yes | No | 2048x2048 | Fast |
 
-## OpenAI (DALL-E / gpt-image-1)
+## OpenAI (gpt-image-1.5)
 
-**Strengths:** Superior instruction following, exceptional text rendering, detailed editing, world knowledge.
+**Strengths:** Superior instruction following, exceptional text rendering (especially small/dense text), detailed editing with visual consistency, world knowledge. 4x faster than previous generation.
 
-**Models:** `gpt-image-1` (recommended), `dall-e-3`, `dall-e-2`
+**Models:** `gpt-image-1.5` (recommended, Dec 2025), `gpt-image-1`, `dall-e-3`, `dall-e-2`
 
-**Dimensions:** 1024x1024, 1536x1024, 1024x1536
+**Dimensions:** 1024x1024, 1536x1024, 1024x1536 (gpt-image-1.5/1); 1792x1024, 1024x1792 (DALL-E 3)
 
 **Environment:** `OPENAI_API_KEY`
 

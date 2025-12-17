@@ -20,6 +20,7 @@ export declare class OpenAIProvider extends ImageProvider {
     edit(input: EditInput): Promise<ProviderResult>;
     /**
      * Map width/height to OpenAI size strings
+     * gpt-image-1.5/1 supports: 1024x1024, 1536x1024, 1024x1536
      * DALL-E 3 supports: 1024x1024, 1792x1024, 1024x1792
      */
     private mapSize;
