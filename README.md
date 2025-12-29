@@ -12,7 +12,7 @@
 <p align="center">
   <a href="https://github.com/shipdeckai/image-gen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/shipdeckai/image-gen" alt="License"></a>
   <a href="https://github.com/shipdeckai/image-gen/stargazers"><img src="https://img.shields.io/github/stars/shipdeckai/image-gen" alt="GitHub Stars"></a>
-  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-green" alt="MCP Compatible"></a>
+  <img src="https://img.shields.io/badge/Claude%20Code-Plugin-blue" alt="Claude Code Plugin">
 </p>
 
 <p align="center">
