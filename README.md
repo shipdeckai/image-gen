@@ -5,7 +5,14 @@
 <h1 align="center">Image Gen</h1>
 
 <p align="center">
-  AI-powered image generation CLI and Claude Code skill with multi-provider support.
+  <strong>10 AI image providers. One unified interface.</strong><br>
+  Generate images with OpenAI DALL-E, BFL FLUX, Stability AI, Ideogram, Google Gemini, FAL, Leonardo, Recraft, Replicate, and ClipDrop through a single CLI or Claude Code plugin.
+</p>
+
+<p align="center">
+  <a href="https://github.com/shipdeckai/image-gen/blob/main/LICENSE"><img src="https://img.shields.io/github/license/shipdeckai/image-gen" alt="License"></a>
+  <a href="https://github.com/shipdeckai/image-gen/stargazers"><img src="https://img.shields.io/github/stars/shipdeckai/image-gen" alt="GitHub Stars"></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-green" alt="MCP Compatible"></a>
 </p>
 
 <p align="center">
@@ -67,17 +74,30 @@ This repository now hosts only the [landing page](https://shipdeckai.github.io/i
   </a>
 </p>
 
-## Supported Providers
+## Why Image Gen?
+
+| Feature | Image Gen | Single-Provider Tools |
+|---------|-----------|----------------------|
+| **Providers** | 10 | 1-3 |
+| **Automatic Fallbacks** | ✅ Yes | ❌ No |
+| **Intelligent Selection** | ✅ Claude picks best provider | ❌ Manual |
+| **Type Safety** | ✅ Full TypeScript | Varies |
+| **Claude Code Native** | ✅ Built-in | Some |
+
+## Supported Providers (10)
 
 | Provider | Best For |
 |----------|----------|
-| **OpenAI** (DALL-E) | General purpose, text rendering |
-| **BFL** (FLUX.2) | Photorealism, product shots |
-| **Stability AI** | Controlled generation |
-| **Ideogram** | Typography, logos |
-| **Gemini** (Imagen) | Multi-image composition |
-| **FAL** | Fast iterations |
-| **Replicate** | Open models |
+| **OpenAI** (DALL-E 3) | General purpose, text rendering |
+| **BFL** (FLUX.2) | Photorealism, product shots, 4K |
+| **Stability AI** (SDXL) | Controlled generation, img2img |
+| **Ideogram** (v3) | Typography, logos, text in images |
+| **Google Gemini** (Imagen) | Multi-image composition, multimodal |
+| **FAL** | Fast iterations, FLUX models |
+| **Leonardo** | Artistic renders, fantasy, characters |
+| **Recraft** (v3) | #1 ELO ranked, vector output |
+| **Replicate** | Open source models, flexibility |
+| **ClipDrop** | Upscaling, background removal, editing |
 
 ## License
 
