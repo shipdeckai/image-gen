@@ -1,0 +1,71 @@
+# Image Gen
+
+> AI-powered image generation CLI and Claude Code plugin with 10 provider support.
+
+Image Gen unifies 10 AI image generation providers into a single interface. It provides intelligent provider selection, automatic fallbacks, and enterprise-grade reliability.
+
+## What It Does
+
+- Generates AI images using 10 different providers through one unified API
+- Automatically selects the best provider based on the prompt content
+- Falls back to alternative providers if one fails
+- Works as a Claude Code plugin for seamless integration
+
+## Supported Providers (10)
+
+1. **OpenAI (DALL-E 3)**: General purpose, excellent text rendering
+2. **BFL (FLUX.2)**: Photorealism, product shots, 4K resolution
+3. **Stability AI (SDXL)**: Controlled generation, img2img support
+4. **Ideogram (v3)**: Best typography, logos, text in images
+5. **Google Gemini (Imagen 4)**: Multi-image composition, multimodal
+6. **FAL**: Fast iterations, FLUX models, sub-second speed
+7. **Leonardo**: Artistic renders, fantasy, characters, game assets
+8. **Recraft (v3)**: #1 ELO ranked, vector output, perfect text
+9. **Replicate**: Open source models, maximum flexibility
+10. **ClipDrop**: Upscaling, background removal, post-processing
+
+## Installation
+
+For Claude Code users:
+
+```
+/plugin marketplace add shipdeckai/claude-skills
+/plugin install image-gen@shipdeckai/claude-skills
+```
+
+## Configuration
+
+Set API keys in your shell profile:
+
+```bash
+export OPENAI_API_KEY="sk-..."       # For DALL-E
+export BFL_API_KEY="..."             # For FLUX (best quality)
+export STABILITY_API_KEY="..."       # For Stable Diffusion
+export IDEOGRAM_API_KEY="..."        # For typography
+export GEMINI_API_KEY="..."          # For Google Imagen
+```
+
+## Usage Examples
+
+```
+> Generate a professional product photo of a coffee mug
+> Create a logo for a tech startup called "Nexus"
+> Generate a 4K landscape photograph of mountains at sunset
+```
+
+## Key Features
+
+- **Intelligent Selection**: Routes to the best provider for each prompt
+- **Automatic Fallbacks**: Never fails a generation
+- **Type Safety**: Full TypeScript with Zod validation
+- **Claude Code Native**: Built-in integration
+
+## Links
+
+- Website: https://shipdeckai.github.io/image-gen
+- GitHub: https://github.com/shipdeckai/image-gen
+- Plugin: https://github.com/shipdeckai/claude-skills
+
+## License
+
+MIT License - Free for commercial and personal use.

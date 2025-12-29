@@ -1,0 +1,11 @@
+# robots.txt for Image Gen
+# https://shipdeckai.github.io/image-gen
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://shipdeckai.github.io/image-gen/sitemap.xml
+
+# LLMs.txt for AI crawlers
+# https://shipdeckai.github.io/image-gen/llms.txt

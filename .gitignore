@@ -53,6 +53,8 @@ venv/
 *.txt
 !.env.example
 !.env.test
+!docs/llms.txt
+!docs/robots.txt
 
 # Generated images directory
 .image-gen-mcp/
